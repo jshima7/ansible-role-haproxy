@@ -70,25 +70,13 @@ Here is the sample playbook you can refer.
 ```
 
 
-This is main yaml file ( tasks/main.yml )
+Example flow
+------------
+1. Create ansible environment, referring to http://docs.ansible.com/playbooks_best_practices.html
 
-```yaml
----
-- name: 'Check OS dist and version'
-  fail: msg="This haproxy role supports only CentOS 6.xx"
-  failed_when: not (ansible_distribution == 'CentOS' and ansible_distribution_major_version == '6')
-  tags: check-os-version
+2. cd "ansible environemt root directory"/roles && git clone https://github.com/jshima7/ansible-role-haproxy -b master haproxy
 
-- include: common-packages.yml
-  when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '6'
-  tags: common-packages
-
-- include: haproxy.yml
-  when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '6'
-  tags: haproxy
-```
-
-Sample playbook commands
+3. Run ansible-playbook commands
 
 ```yaml
 Apply all tasks
