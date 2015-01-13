@@ -91,10 +91,17 @@ This is main yaml file ( tasks/main.yml )
 Sample playbook commands
 
 ```yaml
-- ansible-playbook -i [INVENTORY FILE] [PLAYBOOK YAML]
-- ansible-playbook -i [INVENTORY FILE] [PLAYBOOK YAML] -t check-os-version
-- ansible-playbook -i [INVENTORY FILE] [PLAYBOOK YAML] -t common-packages
-- ansible-playbook -i [INVENTORY FILE] [PLAYBOOK YAML] -t haproxy
+Apply all tasks
+  ansible-playbook -i [INVENTORY FILE] [PLAYBOOK YAML]
+
+Apply only 'check-os-version' task
+  ansible-playbook -i [INVENTORY FILE] [PLAYBOOK YAML] -t check-os-version
+
+Apply only 'common-packages' task
+  ansible-playbook -i [INVENTORY FILE] [PLAYBOOK YAML] -t common-packages
+
+Apply only 'haproxy' task
+  ansible-playbook -i [INVENTORY FILE] [PLAYBOOK YAML] -t haproxy
 ```
 
 
