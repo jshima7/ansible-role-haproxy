@@ -90,10 +90,12 @@ This is main yaml file ( tasks/main.yml )
 
 Sample playbook commands
 
+```yaml
 - ansible-playbook -i <INVENTORY FILE> <PLAYBOOK YAML>
 - ansible-playbook -i <INVENTORY FILE> <PLAYBOOK YAML> -t check-os-version
 - ansible-playbook -i <INVENTORY FILE> <PLAYBOOK YAML> -t common-packages
 - ansible-playbook -i <INVENTORY FILE> <PLAYBOOK YAML> -t haproxy
+```
 
 
 
