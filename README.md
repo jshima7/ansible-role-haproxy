@@ -1,38 +1,103 @@
 Role Name
 =========
 
-A brief description of the role goes here.
+Install and configure haproxy
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Works on only CentOS 6.xx, and haproxy 1.5.2.
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+There are the following 4 main sections of variables
+  - global
+  - defaults
+  - frontends
+  - backends
+
+defaults/main.yml keeps global/defaults portions, frontends/backends variables need to be defined in playbook.
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+No dependency needed
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+Here is the sample playbook you can refer.
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+```yaml
+- hosts: haproxy
+  sudo: yes
+  gather_facts: yes
+  roles:
+  - role: haproxy
+    haproxy_version: 1.5
+    haproxy_frontends:
+      - name: 'frontend-http'
+        ip: '192.168.33.13'
+        port: '80'
+        maxconn: '1000'
+        acl:
+          - name: 'url_blog'
+            condition: 'path_beg /blog'
+        use_backend:
+          - name: 'backend-blog'
+            condition: 'if url_blog'
+        default_backend: 'backend-http'
+    haproxy_backends:
+      - name: 'backend-http'
+        balance: 'roundrobin'
+        servers:
+          - name: 'web01'
+            ip: '192.168.33.15'
+            port: '80'
+          - name: 'web02'
+            ip: '192.168.33.16'
+            port: '80'
+      - name: 'backend-blog'
+        balance: 'roundrobin'
+        servers:
+          - name: 'web01'
+            ip: '192.168.33.15'
+            port: '80'
+          - name: 'web03'
+            ip: '192.168.33.14'
+            port: '80'
+```
 
-License
--------
 
-BSD
+This is main yaml file ( tasks/main.yml )
+
+```yaml
+---
+- name: 'Check OS dist and version'
+  fail: msg="This haproxy role supports only CentOS 6.xx"
+  failed_when: not (ansible_distribution == 'CentOS' and ansible_distribution_major_version == '6')
+  tags: check-os-version
+
+- include: common-packages.yml
+  when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '6'
+  tags: common-packages
+
+- include: haproxy.yml
+  when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '6'
+  tags: haproxy
+```
+
+Sample playbook commands
+
+- ansible-playbook -i <INVENTORY FILE> <PLAYBOOK YAML>
+- ansible-playbook -i <INVENTORY FILE> <PLAYBOOK YAML> -t check-os-version
+- ansible-playbook -i <INVENTORY FILE> <PLAYBOOK YAML> -t common-packages
+- ansible-playbook -i <INVENTORY FILE> <PLAYBOOK YAML> -t haproxy
+
+
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Junichiro Shimamura
