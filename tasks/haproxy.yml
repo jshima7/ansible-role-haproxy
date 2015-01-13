@@ -1,0 +1,7 @@
+---
+- name: configure /etc/haproxy/haproxy.cfg
+  action: template src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg owner=haproxy group=haproxy mode="u=rw,g=r,o=r"
+  when: haproxy_frontends is defined
+  notify:
+  - restart haproxy
+  tags: haproxy

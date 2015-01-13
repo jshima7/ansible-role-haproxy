@@ -1,0 +1,117 @@
+#{{ ansible_managed }}
+# /etc/haproxy.haproxy.cfg
+#---------------------------------------------------------------------
+# Global settings
+#---------------------------------------------------------------------
+global
+{% if config.global.log is defined %}
+{% for log in config.global.log %}
+    log {{ log.ip }} {{ log.facility }}
+{% endfor -%}
+{% endif -%}
+
+{% if config.global.chroot is defined %}
+    chroot {{ config.global.chroot }}
+{% endif -%}
+{% if config.global.pidfile is defined %}
+    pidfile {{ config.global.pidfile }}
+{% endif -%}
+{% if config.global.maxconn is defined %}
+    maxconn {{ config.global.maxconn }}
+{% endif -%}
+{% if config.global.user is defined %}
+    user {{ config.global.user }}
+{% endif -%}
+{% if config.global.group is defined %}
+    group {{ config.global.group }}
+{% endif -%}
+{% if config.global.stats_socket is defined %}
+    stats socket {{ config.global.stats_socket }}
+{% endif %}
+
+#---------------------------------------------------------------------
+# common defaults that all the 'listen' and 'backend' sections will
+# use if not designated in their block
+#---------------------------------------------------------------------
+defaults
+{% if config.defaults.mode is defined %}
+    mode {{ config.defaults.mode }}
+{% endif -%}
+{% if config.defaults.log is defined %}
+    log {{ config.defaults.log }}
+{% endif -%}
+{% if config.defaults.option is defined %}
+{% for option in config.defaults.option %}
+    option {{ option }}
+{% endfor -%}
+{% endif -%}
+{% if config.defaults.retries is defined %}
+    retries {{ config.defaults.retries }}
+{% endif -%}
+{% if config.defaults.timeout is defined %}
+{% for timeout in config.defaults.timeout %}
+    timeout {{ timeout }}
+{% endfor -%}
+{% endif -%}
+{% if config.defaults.maxconn is defined %}
+    maxconn {{ config.defaults.maxconn }}
+{% endif %}
+
+#---------------------------------------------------------------------
+# main frontend which proxys to the backends
+#---------------------------------------------------------------------
+{% if haproxy_frontends is defined %}
+{% for frontend in haproxy_frontends %}
+{% if frontend.name is defined %}
+frontend {{ frontend.name }}
+{% endif -%}
+
+{% if frontend.ip is defined and frontend.port is defined %}
+    bind {{ frontend.ip }}:{{ frontend.port }}
+{% endif -%}
+
+{% if frontend.maxconn is defined %}
+    maxconn {{ frontend.maxconn }}
+{% endif -%}
+
+{% if frontend.acl is defined %}
+{% for acl in frontend.acl %}
+    acl {{ acl.name }} {{ acl.condition }}
+{% endfor %}
+{% endif -%}
+
+{% if frontend.use_backend is defined %}
+{% for use_backend in frontend.use_backend %}
+    use_backend {{ use_backend.name }} {{ use_backend.condition }}
+{% endfor %}
+{% endif -%}
+
+{% if frontend.default_backend is defined %}
+    default_backend {{ frontend.default_backend }}
+{% endif -%}
+
+{% endfor -%}
+{% endif %}
+
+#---------------------------------------------------------------------
+# backends
+#---------------------------------------------------------------------
+{% if haproxy_backends is defined %}
+{% for backend in haproxy_backends %}
+{% if backend.name is defined %}
+backend {{ backend.name }}
+{% endif -%}
+
+{% if backend.balance is defined %}
+    balance {{ backend.balance }}
+{% endif -%}
+
+{% if backend.servers is defined %}
+{% for server in backend.servers %}
+    server {{ server.name }} {{ server.ip }}:{{ server.port }} check
+{% endfor %}
+{% endif %}
+
+{% endfor -%}
+{% endif %}
+

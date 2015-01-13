@@ -1,0 +1,35 @@
+---
+# defaults file for haproxy
+config:
+  global:
+    log:
+      - ip:       '127.0.0.1'
+        facility: 'local2'
+    chroot:       '/var/lib/haproxy'
+    pidfile:      '/var/run/haproxy.pid'
+    maxconn:      '4000'
+    user:         'haproxy'
+    group:        'haproxy'
+    stats_socket: '/var/lib/haproxy/stats'
+
+
+  defaults:
+    mode:         'http'
+    log:          'global'
+    option:
+    - 'httplog'
+    - 'dontlognull'
+    - 'http-server-close'
+    - 'forwardfor except 127.0.0.0/8'
+    - 'redispatch'
+    retries:      '3'
+    timeout:
+    - 'http-request    10s'
+    - 'queue           1m'
+    - 'connect         10s'
+    - 'client          1m'
+    - 'server          1m'
+    - 'http-keep-alive 10s'
+    - 'check           10s'
+    maxconn:      '3000'
+

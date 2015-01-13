@@ -1,0 +1,13 @@
+---
+- name: 'Check OS dist and version'
+  fail: msg="This haproxy role supports only CentOS 6.xx"
+  failed_when: not (ansible_distribution == 'CentOS' and ansible_distribution_major_version == '6')
+  tags: check-os-version
+
+- include: common-packages.yml
+  when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '6'
+  tags: common-packages
+
+- include: haproxy.yml
+  when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '6'
+  tags: haproxy
