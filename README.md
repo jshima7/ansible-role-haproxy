@@ -74,7 +74,7 @@ Example flow
 ------------
 1. Create ansible environment, referring to http://docs.ansible.com/playbooks_best_practices.html
 
-2. cd "ansible environemt root directory"/roles && git clone https://github.com/jshima7/ansible-role-haproxy -b master haproxy
+2. cd "ansible environment root directory"/roles && git clone https://github.com/jshima7/ansible-role-haproxy -b master haproxy
 
 3. Run ansible-playbook commands
 
